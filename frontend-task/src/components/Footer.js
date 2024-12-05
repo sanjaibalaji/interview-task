@@ -18,10 +18,10 @@ function TableFooter() {
   };
 
   return (
-    <div className="flex items-center justify-between px-4 py-3 bg-white">
-      {/* Rows Per Page */}
+    <div className="flex items-center font-body justify-between px-4 py-3 bg-white">
+     
       <div className="flex items-center space-x-2">
-        <span className="text-sm text-gray-600">Rows Per Page</span>
+        <span className="text-sm ml-28 text-gray-600">Rows Per Page</span>
         <select
           value={rowsPerPage}
           onChange={handleRowsChange}
@@ -32,7 +32,7 @@ function TableFooter() {
           <option value={20}>20</option>
         </select>
         <div className="flex items-center space-x-4">
-        <span className="text-sm text-gray-600">Page {currentPage}</span>
+        <span className="text-sm ml-20 text-gray-600">Page {currentPage}</span>
         <div className="flex items-center space-x-1">
           <button
             onClick={() => handlePageChange("prev")}

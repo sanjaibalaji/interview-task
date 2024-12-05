@@ -1,43 +1,107 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Header from '../../components/Header';
 import Table from '../../components/Table';
 import Footer from '../../components/Footer';
+import { getStateList,deleteStateById } from "../../api/Auth"; 
+import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
+
+const ConfirmDeleteToast = ({ onConfirm, onCancel }) => ( 
+  <div> 
+    <p>Are you sure you want to delete this State?</p> 
+    <button onClick={onConfirm} 
+    className="bg-green-500 text-white p-1 rounded">Yes</button>
+     <button onClick={onCancel} 
+     className="bg-red-500 text-white p-1 rounded ml-2">No</button> 
+     </div> 
+     );
 
 function StateListPage() {
+  const [stateData, setStateData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
+  useEffect(() => {
+    const fetchStateData = async () => {
+      setLoading(true); 
+      try {
+        const data = await getStateList();
+        console.log("API Response:", data); 
 
+        
+        if (Array.isArray(data.states)) {
+          const transformedData = data.states.map((item, index) => ({
+            id: index + 1, 
+            country: item.country.c_name,
+            state: item.s_name,
+            altName: item.s_alt,
+            code: item.s_code,
+            status: item.s_status ? "Active" : "Inactive",
+            actions: item._id 
+          }));
+          setStateData(transformedData);
+        } else {
+          throw new Error("Unexpected data format");
+        }
+      } catch (err) {
+        setError(err.message); 
+        console.error("Error fetching state data:", err);
+        toast.error(err.message || "Failed to fetch state data.");
+      } finally {
+        setLoading(false); 
+      }
+    };
 
+    fetchStateData();
+  }, []);
 
-  // Ensure that the data is correct and formatted properly
-  const countryData = [
-    { id: 1, country: "Australia",state:"Austria", altName: "Aus", code: 316, status: "Active" },
-    { id: 2, country: "India",state:"Austria", altName: "IND", code: 356, status: "Active" },
-    { id: 3, country: "Japan", state:"Austria",altName: "Jap", code: 889, status: "Active" },
-  ];
+  const handleDelete = async (stateId) => { 
+    try 
+    { 
+      await deleteStateById(stateId);
+       toast.success("State deleted successfully!");
+        setStateData((prevData) => prevData.filter((item) => item.actions !== stateId));
+       } catch (error) { 
+        toast.error(error.message || "Failed to delete state.");
+       } 
+      };
+       const confirmDelete = (stateId) => { 
+        const handleConfirm = () => { toast.dismiss(); 
+          handleDelete(stateId); };
+           const handleCancel = () => { toast.dismiss(); };
+            toast( <ConfirmDeleteToast onConfirm={handleConfirm} onCancel={handleCancel} />,
+               { closeOnClick: false, autoClose: false, }
+               );
+               };
 
   const routes = {
-    add:`/addstate`,
-    edit: (id) => `/editstate/`,
-    view: (id) => `/viewstate/`,
-    delete: (id) => `/deletestate/`,
-    confirm: (id) => `/confirmstate/`,
+    add: `/addstate`,
+    edit: (id) => `/editstate/${id}`,
+    view: (id) => `/viewstate/${id}`,
+    delete: confirmDelete,
+    confirm: (id) => `/confirmstate/${id}`,
   };
 
-  const columns = ["S.No", "Country","State", "Alt Name", "Code", "Status","Actions"];
+  const columns = ["S.No", "Country", "State", "Alt Name", "Code", "Status", "Actions"];
 
-  console.log("Country Data:", countryData); // Debugging output to check the data structure
+  console.log("State Data:", stateData); 
 
   return (
     <div>
       <Header />
-      <Table
-        title="State Master"
-        tableData={countryData} // Pass the tableData here
-        columns={columns}
-        routes={routes}
-      />
+      
+        <Table
+          title="State Master"
+          tableData={stateData} 
+          columns={columns}
+          routes={routes}
+          loading={loading}
+                error={error}
+        />
+      
       <Footer />
+      <ToastContainer />
     </div>
   );
 }

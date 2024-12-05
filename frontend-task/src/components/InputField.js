@@ -30,7 +30,7 @@ const InputField = ({ label, type, value, onChange, placeholder }) => {
             className="absolute inset-y-0 right-0 flex items-center px-4 text-white  hover:text-white-600 focus:outline-none"
           >
             <div className="flex items-center">
-              {/* Vertical Line */}
+         
               <div className="h-10 border-r border-gray-500 mr-3"></div>
             <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} />
          </div>

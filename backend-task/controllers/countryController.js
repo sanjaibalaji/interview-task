@@ -1,37 +1,41 @@
 const Country = require("../models/Country");
 const jwt = require('jsonwebtoken');
 
-exports.createCountry = async (req,res) => {
+exports.createCountry = async (req, res) => {
     try {
-        const {c_name,c_alt,c_code,c_status} = req.body;
-        const existingCountry = await Country.findOne({ $or: [{ c_name}, { c_code}] });
-        
+        console.log("initialted")
+        const { c_name, c_alt, c_code, c_status } = req.body;
+        console.log("received data:", req.body);
+        const existingCountry = await Country.findOne({ $or: [{ c_name }, { c_code }] });
+
         if (existingCountry) {
-            // If the country already exists, return a 400 status and a message
+
             return res.status(400).json({ message: "Country or code already exists." });
         }
-        const country = new Country ({c_name,c_alt,c_code,c_status});
+        const country = new Country({ c_name, c_alt, c_code, c_status });
         await country.save();
 
-        res.status(201).json({message:"Country created successfully.",Country});
+        res.status(201).json({ message: "Country created successfully.", country });
     } catch (error) {
-        res.status(500).json({message:"server error.",error:error.message});
+        res.status(500).json({ message: "server error.", error: error.message });
     }
 
 };
 
 exports.getAllCountries = async (req, res) => {
 
-     try { 
-        const countries = await Country.find(); 
-        res.status(200).json(countries); 
+    try {
+        const countries = await Country.find();
+        res.status(200).json(countries);
     } catch (error) {
-         console.log(error); res.status(401).json({ message: "Invalid or expired token." });
-         } };
+        console.log(error); res.status(401).json({ message: "Invalid or expired token." });
+        res.status(500).json({ message: "Failed to fetch countries." });
+    }
+};
 
 exports.getCountryById = async (req, res) => {
     try {
-        const { countryId } = req.params; // Extract countryId from the request parameters
+        const { countryId } = req.params;
 
         const country = await Country.findById(countryId);
 
@@ -55,19 +59,19 @@ exports.getCountryById = async (req, res) => {
 
 exports.updateCountryById = async (req, res) => {
     try {
-   
+
         const { countryId } = req.params;
 
-   
+
         const updates = req.body;
 
-        
-        const updatedCountry = await Country.findByIdAndUpdate(countryId, updates, { 
-            new: true, 
-            runValidators: true 
+
+        const updatedCountry = await Country.findByIdAndUpdate(countryId, updates, {
+            new: true,
+            runValidators: true
         });
 
-      
+
         if (!updatedCountry) {
             return res.status(404).json({ message: "Country not found." });
         }
@@ -88,20 +92,20 @@ exports.updateCountryById = async (req, res) => {
 
 exports.deleteCountryById = async (req, res) => {
     try {
-        // Extract country ID from the request parameters
+
         const { countryId } = req.params;
 
-        // Find and delete the country
+
         const deletedCountry = await Country.findByIdAndDelete(countryId);
 
-        // If the country does not exist
+
         if (!deletedCountry) {
             return res.status(404).json({ message: "Country not found." });
         }
 
         res.status(200).json({
             message: "Country deleted successfully.",
-            country: deletedCountry, // Optionally return the deleted document
+            country: deletedCountry,
         });
     } catch (error) {
         console.log(error);

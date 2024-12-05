@@ -32,7 +32,7 @@ exports.createState = async (req, res) => {
 
 exports.getStateById = async (req, res) => {
     try {
-        const { stateId } = req.params; // Extract countryId from the request parameters
+        const { stateId } = req.params; 
 
         const state = await State.findById(stateId);
 
@@ -78,11 +78,11 @@ exports.getAllStates = async (req, res) => {
 
 exports.getStateById = async (req, res) => {
     try {
-        const { stateId } = req.params; // Extract stateId from the request parameters
+        const { stateId } = req.params; 
 
-        // Find the state by ID and populate the related country field
+        
         const state = await State.findById(stateId)
-            .populate("country", "c_name") // Populate country name only
+            .populate("country", "c_name") 
             .exec();
 
         if (!state) {
@@ -101,6 +101,33 @@ exports.getStateById = async (req, res) => {
         });
     }
 };
+
+exports.getStatesByCountryId = async (req, res) => {
+    try {
+        const { countryId } = req.params; 
+        console.log("getStatesByCountryId called with countryId:", req.params.countryId);
+       
+        const states = await State.find({ country: countryId })
+            .populate("country", "c_name") 
+            .exec();
+
+        if (!states || states.length === 0) {
+            return res.status(404).json({ message: "No states found for the given country." });
+        }
+
+        res.status(200).json({
+            message: "States fetched successfully.",
+            states,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: "Server error.",
+            error: error.message,
+        });
+    }
+};
+
 
 exports.updateStatesById = async (req, res) => {
     try {
@@ -135,20 +162,20 @@ exports.updateStatesById = async (req, res) => {
 };
 exports.deleteStateById = async (req, res) => {
     try {
-        // Extract country ID from the request parameters
+       
         const { stateId } = req.params;
 
-        // Find and delete the country
+        
         const deletedState = await State.findByIdAndDelete(stateId);
 
-        // If the country does not exist
+       
         if (!deletedState) {
             return res.status(404).json({ message: "State not found." });
         }
 
         res.status(200).json({
             message: "State deleted successfully.",
-            state: deletedState, // Optionally return the deleted document
+            state: deletedState, 
         });
     } catch (error) {
         console.log(error);

@@ -5,12 +5,12 @@ import { AuthContext } from '../contexts/AuthContext';
 const ProtectedRoute = ({ children }) => {
   const { auth } = useContext(AuthContext);
 
-  // Redirect to login if not authenticated
+  
   if (!auth || !auth.user) {
     return <Navigate to="/" />;
   }
 
-  return children; // Render the protected component
+  return children; 
 };
 
 export default ProtectedRoute;

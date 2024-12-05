@@ -3,29 +3,36 @@ import InputField from './InputField';
 import { loginUser } from '../api/Auth';
 import { AuthContext } from '../contexts/AuthContext';
 import Logo from '../assets/images/logo.png';
+import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState(null);
-  const { login } = useContext(AuthContext); // Use the login function from context
+  const { login } = useContext(AuthContext); 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null); // Clear previous errors
+    setError(null); 
 
     try {
-      const { user, token } = await loginUser(email, password); // Call API
-      login(user, token); // Update context
-      alert("Login successful!");
-  
-      // Redirect to dashboard (common route for all roles)
-      window.location.href = '/dashboard';
+        const { user, token } = await loginUser(email, password); 
+        login(user, token); 
+        toast.success("Login successful!");
+        <ToastContainer />
+    
+     
+        window.location.href = '/dashboard';
     } catch (err) {
-      setError(err.message || "An error occurred.");
+       
+        toast.error(err.message || "An error occurred.");
+        <ToastContainer />
     }
-  };
+};
+
 
   return (
     <>
@@ -40,7 +47,7 @@ const LoginForm = () => {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="user@coderthemes.com"
+            placeholder="user@gmail.com"
           />
           <InputField
             label="Password"

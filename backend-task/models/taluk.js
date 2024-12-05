@@ -7,7 +7,8 @@ const talukSchema = new mongoose.Schema(
         t_alt:{type:String,required:true},
         t_status:{type:Boolean,required:true},
         district: { type: Schema.Types.ObjectId, ref: 'District' },
-        state: { type: Schema.Types.ObjectId, ref: 'State' }
+        state: { type: Schema.Types.ObjectId, ref: 'State' },
+        country: { type: Schema.Types.ObjectId, ref: 'Country' }
 },
 {timestamps:true}
 );

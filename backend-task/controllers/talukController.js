@@ -5,16 +5,16 @@ const Taluk = require("../models/Taluk")
 
 exports.createTaluk = async (req, res) => {
     try {
-        const { countryId, stateId, districtId } = req.params; // Extract countryId and stateId from params
+        const { countryId, stateId, districtId } = req.params; 
         const { t_name, t_code, t_alt, t_status } = req.body;
         
-        // Validate if the country exists
+        
         const country = await Country.findById(countryId);
         if (!country) {
             return res.status(404).json({ message: "Country not found." });
         }
        
-        // Validate if the state exists and belongs to the given country
+       
         const state = await State.findOne({ _id: stateId, country: countryId });
         if (!state) {
             
@@ -27,13 +27,13 @@ exports.createTaluk = async (req, res) => {
             return res.status(404).json({ message: "District not found for the given state." });
         }
         
-        const existingTaluk = await Taluk.findOne({$or: [{t_name, district: districtId },{t_code, district: districtId }]});
+        const existingTaluk = await Taluk.findOne({$or: [{t_name  }]});
         if (existingTaluk) {
             
             return res.status(400).json({ message: "Taluk or code already exists in this District." });
         }
 
-        // Create the district
+        
         const taluk = await Taluk.create({
             t_name,
             t_code,
@@ -57,18 +57,55 @@ exports.createTaluk = async (req, res) => {
     }
 };
 
+exports.getDistrictsByStateId = async (req, res) => {
+    try {
+        const { stateId } = req.params; 
+        console.log("getDistrictsByStateId called with stateId:", req.params.stateId);
+
+       
+        const districts = await District.find({ state: stateId })
+            .populate({
+                path: "state", 
+                select: "s_name", 
+                populate: {
+                    path: "country", 
+                    select: "c_name", 
+                },
+            })
+            .exec();
+
+        
+        if (!districts || districts.length === 0) {
+            return res.status(404).json({ message: "No districts found for the given state." });
+        }
+
+        
+        res.status(200).json({
+            message: "Districts fetched successfully.",
+            districts,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: "Server error.",
+            error: error.message,
+        });
+    }
+};
+
+
 exports.getTalukById = async (req, res) => {
     try {
-        const { talukId } = req.params; // Extract districtId from the request parameters
+        const { talukId } = req.params; 
 
-        // Find the district by ID and populate state and country details
+        
         const taluk = await Taluk.findById(talukId)
             .populate({
-                path: "state", // Populate state details
-                select: "s_name", // Only fetch the state name
+                path: "state", 
+                select: "s_name", 
                 populate: {
-                    path: "country", // Populate the country details within state
-                    select: "c_name", // Only fetch the country name
+                    path: "country", 
+                    select: "c_name", 
                 },
             })
             .exec();
@@ -93,19 +130,19 @@ exports.getTalukById = async (req, res) => {
 
 exports.getAllTaluks = async (req, res) => {
     try {
-        // Find all districts and populate the related state and country fields
+        
         const taluks = await Taluk.find()
             .populate({
-                path: "state", // Populate state details
-                select: "s_name", // Only fetch the state name
+                path: "district", 
+                select: "d_name", 
                 populate: {
-                    path: "country", // Populate the country details within state
-                    select: "c_name", // Only fetch the country name
+                    path: "state", 
+                    select: "s_name", 
+                    populate: {
+                        path: "country", 
+                        select: "c_name", 
+                    },
                 },
-                  populate:{
-                    path: "district",
-                    select: "d_name"
-                  },
             })
             .exec();
 
@@ -122,21 +159,22 @@ exports.getAllTaluks = async (req, res) => {
     }
 };
 
+
 exports.getTalukById = async (req, res) => {
     try {
-        const { talukId } = req.params; // Extract talukId from the request parameters
+        const { talukId } = req.params; 
 
-        // Find the taluk by ID and populate relationships
+        
         const taluk = await Taluk.findById(talukId)
             .populate({
-                path: "district", // Populate district details
-                select: "d_name", // Only fetch the district name
+                path: "district", 
+                select: "d_name", 
                 populate: {
-                    path: "state", // Populate state details within district
-                    select: "s_name", // Only fetch the state name
+                    path: "state", 
+                    select: "s_name",
                     populate: {
-                        path: "country", // Populate country details within state
-                        select: "c_name", // Only fetch the country name
+                        path: "country", 
+                        select: "c_name", 
                     },
                 },
             })
@@ -194,20 +232,20 @@ exports.updateTalukById = async (req, res) => {
 
 exports.deleteTalukById = async (req, res) => {
     try {
-        // Extract country ID from the request parameters
+       
         const { talukId } = req.params;
 
-        // Find and delete the country
+       
         const deletedTaluk = await Taluk.findByIdAndDelete(talukId);
 
-        // If the country does not exist
+        
         if (!deletedTaluk) {
             return res.status(404).json({ message: "Taluk not found." });
         }
 
         res.status(200).json({
             message: "Taluk deleted successfully.",
-            state: deletedTaluk, // Optionally return the deleted document
+            state: deletedTaluk, 
         });
     } catch (error) {
         console.log(error);

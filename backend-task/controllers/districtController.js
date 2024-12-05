@@ -4,16 +4,16 @@ const District = require("../models/District");
 
 exports.createDistrict = async (req, res) => {
     try {
-        const { countryId, stateId } = req.params; // Extract countryId and stateId from params
+        const { countryId, stateId } = req.params; 
         const { d_name, d_code, d_alt, d_status } = req.body;
 
-        // Validate if the country exists
+    
         const country = await Country.findById(countryId);
         if (!country) {
             return res.status(404).json({ message: "Country not found." });
         }
 
-        // Validate if the state exists and belongs to the given country
+   
         const state = await State.findOne({ _id: stateId, country: countryId });
         if (!state) {
             return res.status(404).json({ message: "State not found for the given country." });
@@ -24,7 +24,6 @@ exports.createDistrict = async (req, res) => {
             return res.status(400).json({ message: "District or code already exists in this country." });
         }
 
-        // Create the district
         const district = await District.create({
             d_name,
             d_code,
@@ -49,11 +48,11 @@ exports.createDistrict = async (req, res) => {
 
 exports.getDistrictById = async (req, res) => {
     try {
-        const { districtId } = req.params; // Extract stateId from the request parameters
+        const { districtId } = req.params; 
 
-        // Find the state by ID and populate the related country field
+      
         const district = await District.findById(districtId)
-            .populate("country", "c_name") // Populate country name only
+            .populate("country", "c_name")
             .exec();
 
         if (!district) {
@@ -75,14 +74,14 @@ exports.getDistrictById = async (req, res) => {
 
 exports.getAllDistricts = async (req, res) => {
     try {
-        // Find all districts and populate the related state and country fields
+       
         const districts = await District.find()
             .populate({
-                path: "state", // Populate state details
-                select: "s_name", // Only fetch the state name
+                path: "state", 
+                select: "s_name", 
                 populate: {
-                    path: "country", // Populate the country details within state
-                    select: "c_name", // Only fetch the country name
+                    path: "country", 
+                    select: "c_name", 
                 },
             })
             .exec();
@@ -102,16 +101,16 @@ exports.getAllDistricts = async (req, res) => {
 
 exports.getDistrictById = async (req, res) => {
     try {
-        const { districtId } = req.params; // Extract districtId from the request parameters
+        const { districtId } = req.params; 
 
-        // Find the district by ID and populate state and country details
+       
         const district = await District.findById(districtId)
             .populate({
-                path: "state", // Populate state details
-                select: "s_name", // Only fetch the state name
+                path: "state", 
+                select: "s_name",
                 populate: {
-                    path: "country", // Populate the country details within state
-                    select: "c_name", // Only fetch the country name
+                    path: "country", 
+                    select: "c_name", 
                 },
             })
             .exec();
@@ -168,20 +167,20 @@ exports.updateDistrictById = async (req, res) => {
 
 exports.deleteDistrictById = async (req, res) => {
     try {
-        // Extract country ID from the request parameters
+        
         const { districtId } = req.params;
 
-        // Find and delete the country
+       
         const deletedDistrict = await District.findByIdAndDelete(districtId);
 
-        // If the country does not exist
+       
         if (!deletedDistrict) {
             return res.status(404).json({ message: "District not found." });
         }
 
         res.status(200).json({
             message: "District deleted successfully.",
-            state: deletedDistrict, // Optionally return the deleted document
+            state: deletedDistrict,
         });
     } catch (error) {
         console.log(error);
