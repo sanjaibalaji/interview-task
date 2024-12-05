@@ -24,7 +24,7 @@ const AddState = () => {
         console.log("API Response:", data);
 
         if (Array.isArray(data)) {
-          const countryOptions = [{ value: "", label: "Select an option" }, ...data.map((country) => ({
+          const countryOptions = [ ...data.map((country) => ({
             value: country._id,
             label: country.c_name,
           }))];

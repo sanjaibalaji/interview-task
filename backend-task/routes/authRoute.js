@@ -17,26 +17,26 @@ router.post("/login", loginUser);
 
 router.post("/createcountry",authenticateUser, roleMiddleware(["admin"]),createCountry );
 router.post("/getallcountry",authenticateUser, roleMiddleware(["admin","manager","user"]),getAllCountries);
-router.post("/getcountrybyid/:countryId",authenticateUser, roleMiddleware(["admin","manager"]),getCountryById);
+router.post("/getcountrybyid/:countryId",authenticateUser, roleMiddleware(["admin","manager","user"]),getCountryById);
 router.post("/updatecountry/:countryId",authenticateUser, roleMiddleware(["admin","manager"]),updateCountryById);
 router.post("/deletecountry/:countryId",authenticateUser, roleMiddleware("admin"),deleteCountryById);
 
 router.post("/createstate/:countryId",authenticateUser, roleMiddleware("admin"),createState);
 router.post("/getallstate",authenticateUser, roleMiddleware(["admin","manager","user"]),getAllStates);
-router.post("/getstatebyid/:stateId",authenticateUser, roleMiddleware(["admin","manager"]),getStateById);
+router.post("/getstatebyid/:stateId",authenticateUser, roleMiddleware(["admin","manager","user"]),getStateById);
 router.post("/getstatebycountryid/:countryId",authenticateUser,roleMiddleware(["admin","manager","user"]),getStatesByCountryId);
 router.post("/updatestate/:stateId",authenticateUser, roleMiddleware(["admin","manager"]),updateStatesById);
 router.post("/deletestate/:stateId",authenticateUser, roleMiddleware("admin"),deleteStateById);
 
 router.post("/createdistrict/:countryId/:stateId",authenticateUser, roleMiddleware("admin"),createDistrict);
 router.post("/getalldistrict",authenticateUser, roleMiddleware(["admin","manager","user"]),getAllDistricts);
-router.post("/getdistrictbyid/:districtId",authenticateUser, roleMiddleware(["admin","manager"]),getDistrictById);
+router.post("/getdistrictbyid/:districtId",authenticateUser, roleMiddleware(["admin","manager","user"]),getDistrictById);
 router.post("/updatedistrict/:districtId",authenticateUser, roleMiddleware(["admin","manager"]),updateDistrictById);
 router.post("/deletedistrict/:districtId",authenticateUser, roleMiddleware("admin"),deleteDistrictById);
 
 router.post("/createtaluk/:countryId/:stateId/:districtId",authenticateUser, roleMiddleware("admin"),createTaluk);
 router.post("/getalltaluk",authenticateUser, roleMiddleware(["admin","manager","user"]),getAllTaluks);
-router.post("/gettalukbyid/:talukId",authenticateUser, roleMiddleware(["admin","manager"]),getTalukById);
+router.post("/gettalukbyid/:talukId",authenticateUser, roleMiddleware(["admin","manager","user"]),getTalukById);
 router.post("/getdistrictbystate/:stateId",authenticateUser,roleMiddleware(["admin","manager"]),getDistrictsByStateId);
 router.post("/updatetaluk/:talukId",authenticateUser, roleMiddleware("admin","manager"),updateTalukById);
 router.post("/deletetaluk/:talukId",authenticateUser, roleMiddleware("admin"),deleteTalukById);
